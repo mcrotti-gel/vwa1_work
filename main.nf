@@ -8,19 +8,19 @@ nextflow.enable.dsl=2
 workflow {
 	// single participant vcfs
 	input_vcfs_ch = Channel
-					.fromPath(params.input_vcfs)
-					.ifEmpty { exit 1, "Cannot find input file : ${params.input_vcfs}" }
-					.map {file_name, vcf, vcf_idx -> [ file_name, file(vcf), file(vcf_idx) ] }
+		.fromPath(params.input_vcfs)
+		.ifEmpty { exit 1, "Cannot find input file : ${params.input_vcfs}" }
+		.map {file_name, vcf, vcf_idx -> [ file_name, file(vcf), file(vcf_idx) ] }
 
 
 	// regions file
 	regions_ch = Channel
-					.fromPath(params.regions)
-					.ifEmpty { exit 1, "Cannot find input file : ${params.regions}" }
+		.fromPath(params.regions)
+		.ifEmpty { exit 1, "Cannot find input file : ${params.regions}" }
 
 	// consequence file
 	consequence_ch = Channel
-						.fromPath(params.consequence)
+		.fromPath(params.consequence)
 
 	
 	if (params.vcftype == "standard") {

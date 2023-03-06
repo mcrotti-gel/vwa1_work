@@ -24,9 +24,9 @@ workflow {
 		.fromPath(params.consequence)
 
 	
-	if (params.vcftype == "standard") {
+	if (params.vcf_type == "standard") {
 		query_standard_vcf(input_vcfs_ch, regions_ch, consequence_ch)
-	} else if (params.vcftype == "structural") {
+	} else if (params.vcf_type == "structural") {
 		query_structural_vcf(input_vcfs_ch, regions_ch)
 	} else {
 		println "Error: wrong vcf type specified!"

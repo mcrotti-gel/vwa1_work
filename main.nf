@@ -10,6 +10,7 @@ workflow {
 	input_vcfs_ch = Channel
 		.fromPath(params.input_vcfs)
 		.ifEmpty { exit 1, "Cannot find input file : ${params.input_vcfs}" }
+		.splitCsv(skip:1)
 		.map {file_name, vcf, vcf_idx -> [ file_name, file(vcf), file(vcf_idx) ] }
 
 

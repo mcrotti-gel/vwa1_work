@@ -54,7 +54,7 @@ process query_standard_vcf {
 	script:
 
 	"""
-	tabix -h ${vcf} -R ${regions} > ${file_name}_VWA1_results.txt
+	tabix -h ${vcf} -R ${regions} | bcftools norm -m -any > ${file_name}_VWA1_results.txt
 	
 	"""
 

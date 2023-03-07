@@ -54,7 +54,9 @@ process query_standard_vcf {
 	script:
 
 	"""
-	tabix -h ${vcf} -R ${regions} | bcftools norm -m -any > ${file_name}_VWA1_results.txt
+	tabix -h ${vcf} -R ${regions} | bcftools norm -m -any | \
+	bcftools view -f PASS -i '(MIN(FMT/DP)>10 & MIN(FMT/GQ)>15) | (MIN(FMT/DPI)>10 & MIN(FMT/GQ)>15)' > ${file_name}_VWA1_results.txt 
+
 	
 	"""
 

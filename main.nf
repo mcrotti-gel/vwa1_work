@@ -56,8 +56,6 @@ process query_standard_vcf {
 	"""
 	tabix -h ${vcf} -R ${regions} > ${file_name}_VWA1_results.txt
 	
-	sed -i '1s/^/SAMPLE\tCHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tGT\tGQ\tDP_DPI\tCSQT\tAF1000G\n/' ${file_name}_VWA1_results.txt
-
 	"""
 
 }

@@ -49,7 +49,7 @@ process query_standard_vcf {
 	each file(consequence)
 
 	output:
-	file("VWA1_results.txt")
+	file("${file_name}_VWA1_results.txt")
 
 	script:
 
@@ -58,7 +58,7 @@ process query_standard_vcf {
 	bcftools norm -m -any | \
 	bcftools view -f PASS -i '(MIN(FMT/DP)>10 & MIN(FMT/GQ)>15) | (MIN(FMT/DPI)>10 & MIN(FMT/GQ)>15)' | \
 	bcftools query -f '[%SAMPLE]\t%CHROM\t%POS\t%ID\t%REF\t%ALT\t%QUAL\t%FILTER\t[%GT]\t[%GQ]\t([%DP]|[%DPI])\tINFO/CSQT\t%INFO/AF1000G\n' | \
-	grep -f ${consequence} >> VWA1_results.txt
+	grep -f ${consequence} > ${file_name}_VWA1_results.txt
 	
 	sed -i '1s/^/SAMPLE\tCHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tGT\tGQ\tDP_DPI\tCSQT\tAF1000G\n/' VWA1_results.txt
 

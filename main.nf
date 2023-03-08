@@ -54,10 +54,10 @@ process query_standard_vcf {
 	script:
 
 	"""
-	tabix -h ${vcf} -R ${regions} | bcftools norm -m -any | \
+	tabix -h ${vcf} -R ${regions} | \
 	bcftools view -f PASS -i '(MIN(FMT/DP)>10 & MIN(FMT/GQ)>15) | (MIN(FMT/DPI)>10 & MIN(FMT/GQ)>15)' | \
-	bcftools query -f '[%SAMPLE]\t%CHROM\t%POS\t%ID\t%REF\t%ALT\t%QUAL\t%FILTER\t[%GT]\t[%GQ]\t([%DP]|[%DPI])\tINFO/CSQT\t%INFO/AF1000G\t%INFO\n' > ${file_name}_out.txt
-	grep -f ${consequence} ${file_name}_out.txt > ${file_name}_VWA1_results.txt
+	bcftools query -f '[%SAMPLE]\t%CHROM\t%POS\t%ID\t%REF\t%ALT\t%QUAL\t%FILTER\t[%GT]\t[%GQ]\t([%DP]|[%DPI])\tINFO/CSQT\t%INFO/AF1000G\t%INFO\n' | \
+	grep -f ${consequence} > ${file_name}_VWA1_results.txt
 
 	
 	"""

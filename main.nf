@@ -1,50 +1,21 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-/* --------------------------
-  Set up variables
- ----------------------------*/
-
-workflow {
-	// single participant vcfs
-	input_vcfs_ch = Channel
-		.fromPath(params.input_vcfs)
-		.ifEmpty { exit 1, "Cannot find input file : ${params.input_vcfs}" }
-		.splitCsv(skip:1)
-		.map {file_name, vcf, vcf_idx -> [ file_name, file(vcf), file(vcf_idx) ] }
-
-
-	// regions file
-	regions_ch = Channel
-		.fromPath(params.regions)
-		.ifEmpty { exit 1, "Cannot find input file : ${params.regions}" }
-
-	// consequence file
-	consequence_ch = Channel
-		.fromPath(params.consequence)
-
-	// Processes
-	query_vcf(input_vcfs_ch, regions_ch, consequence_ch)
-	
-
-
-}
-
 
 // Run query
 
-process query_vcf {
+process QUERY_VCF {
 
 	tag "$file_name"
 	publishDir "${params.outdir}/query_vcf_out", mode: 'copy'
 
 	input:
-	tuple val(file_name), file(vcf), file(vcf_idx)
-	each file(regions)
-	each file(consequence)
+	tuple val(file_name), path(vcf), path(vcf_idx)
+	each path(regions)
+	each path(consequence)
 
 	output:
-	file("${file_name}_VWA1_results.txt")
+	path("${file_name}_VWA1_results.txt")
 
 	shell:
 
@@ -66,5 +37,58 @@ process query_vcf {
 
 	else 
 		error "Error: wrong vcf type specified!"
+
+}
+
+// Concatenate outfiles
+
+process CONCATENATE {
+
+	publishDir "${params.outdir}/final_out", mode: 'copy'
+
+	input:
+	path(sample_output)
+
+	output:
+	path("VWA1_results.txt")
+
+	shell:
+
+	if ( params.vcf_type == "standard" )
+	'''
+	cat !{sample_output} >> VWA1_results.txt
+	sed -i '1s/^/SAMPLE\tCHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tGT\tGQ\tDP_DPI\tCSQT\tAF1000G\n/' VWA1_results.txt
+	'''
+	else if( params.vcf_type == "structural" )
+
+	'''
+	cat !{sample_output} >> VWA1_results.txt
+	sed -i '1s/^/[%SAMPLE=%GT,%GQ]\t%SVTYPE\t%CHROM\t%POS\t%END\t%REF\t%ALT\t%FILTER\t%QUAL\n/' /home/mcrotti/vwa1_work/VWA1_results.txt
+	'''
+
+
+}
+
+workflow {
+	// single participant vcfs
+	input_vcfs_ch = Channel
+		.fromPath(params.input_vcfs)
+		.ifEmpty { exit 1, "Cannot find input file : ${params.input_vcfs}" }
+		.splitCsv(skip:1)
+		.map {file_name, vcf, vcf_idx -> [ file_name, file(vcf), file(vcf_idx) ] }
+
+
+	// regions file
+	regions_ch = Channel
+		.fromPath(params.regions)
+		.ifEmpty { exit 1, "Cannot find input file : ${params.regions}" }
+
+	// consequence file
+	consequence_ch = Channel
+		.fromPath(params.consequence)
+
+	// Processes
+	sample_output_ch = QUERY_VCF( input_vcfs_ch, regions_ch, consequence_ch )
+	CONCATENATE( sample_output_ch.collect() )
 
 }

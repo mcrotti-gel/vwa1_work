@@ -32,7 +32,7 @@ process QUERY_VCF {
 		"""
 		tabix -h ${vcf} -R ${regions} | \
 		bcftools norm -m -any | \
-		bcftools query -f '[%SAMPLE=%GT,%GQ]\t%SVTYPE\t%CHROM\t%POS\t%END\t%REF\t%ALT\t%FILTER\t%QUAL\n' >> VWA1_SV_results.txt
+		bcftools query -f '[%SAMPLE=%GT,%GQ]\t%SVTYPE\t%CHROM\t%POS\t%END\t%REF\t%ALT\t%FILTER\t%QUAL\n' >> !{file_name}_VWA1_results.txt
 		"""
 
 	else 
@@ -63,7 +63,7 @@ process CONCATENATE {
 
 	'''
 	cat !{sample_output} >> VWA1_results.txt
-	sed -i '1i [SAMPLE=GT,GQ]\tSVTYPE\tCHROM\tPOS\tEND\tREF\tALT\tFILTER\tQUAL' /home/mcrotti/vwa1_work/VWA1_results.txt
+	sed -i '1i [SAMPLE=GT,GQ]\tSVTYPE\tCHROM\tPOS\tEND\tREF\tALT\tFILTER\tQUAL' VWA1_results.txt
 	'''
 
 

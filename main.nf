@@ -57,13 +57,13 @@ process CONCATENATE {
 	if ( params.vcf_type == "standard" )
 	'''
 	cat !{sample_output} || true >> VWA1_results.txt
-	sed -i '1s/^/SAMPLE\tCHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tGT\tGQ\tDP_DPI\tCSQT\tAF1000G\n/' VWA1_results.txt
+	sed -i '1i SAMPLE\tCHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tGT\tGQ\tDP_DPI\tCSQT\tAF1000G' VWA1_results.txt
 	'''
 	else if( params.vcf_type == "structural" )
 
 	'''
 	cat !{sample_output} || true >> VWA1_results.txt
-	sed -i '1s/^/[%SAMPLE=%GT,%GQ]\t%SVTYPE\t%CHROM\t%POS\t%END\t%REF\t%ALT\t%FILTER\t%QUAL\n/' /home/mcrotti/vwa1_work/VWA1_results.txt
+	sed -i '1i [SAMPLE=GT,GQ]\tSVTYPE\tCHROM\tPOS\tEND\tREF\tALT\tFILTER\tQUAL' /home/mcrotti/vwa1_work/VWA1_results.txt
 	'''
 
 

@@ -7,7 +7,6 @@ nextflow.enable.dsl=2
 process QUERY_VCF {
 
 	tag "$file_name"
-	publishDir "${params.outdir}/query_vcf_out", mode: 'copy'
 
 	input:
 	tuple val(file_name), path(vcf), path(vcf_idx)

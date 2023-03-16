@@ -41,7 +41,7 @@ process QUERY_VCF {
 
 // Concatenate outfiles
 
-process CONCATENATE {
+process ADD_HEADER {
 
 	publishDir "${params.outdir}/final_out", mode: 'copy'
 
@@ -55,13 +55,12 @@ process CONCATENATE {
 
 	if ( params.vcf_type == "standard" )
 	'''
-	cat !{sample_output} >> VWA1_results.txt
 	sed -i '1i SAMPLE\tCHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tGT\tGQ\tDP_DPI\tCSQT\tAF1000G' VWA1_results.txt
 	'''
+	
 	else if( params.vcf_type == "structural" )
 
 	'''
-	cat !{sample_output} >> VWA1_results.txt
 	sed -i '1i [SAMPLE=GT,GQ]\tSVTYPE\tCHROM\tPOS\tEND\tREF\tALT\tFILTER\tQUAL' VWA1_results.txt
 	'''
 
@@ -88,6 +87,6 @@ workflow {
 
 	// Processes
 	sample_output_ch = QUERY_VCF( input_vcfs_ch, regions_ch, consequence_ch )
-	CONCATENATE( sample_output_ch.collect() )
+	ADD_HEADER( sample_output_ch.collectFile(name: 'VWA1_results.txt') )
 
 }
